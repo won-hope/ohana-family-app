@@ -1,43 +1,76 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# dependencies
+# ------------------------------
+# Dependencies
+# ------------------------------
 node_modules/
 
-# Expo
+# ------------------------------
+# Expo / React Native
+# ------------------------------
 .expo/
 dist/
 web-build/
 expo-env.d.ts
-
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+pnpm-debug.log*
 
 # Metro
 .metro-health-check*
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
+# ------------------------------
+# Environment files (IMPORTANT)
+# ------------------------------
+.env
+.env.*
+!.env.example
 
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
+# ------------------------------
+# Build artifacts / caches
+# ------------------------------
+# TypeScript
 *.tsbuildinfo
 
-app-example
+# EAS
+.eas/
+# if you generate builds locally
+*.apk
+*.aab
+*.ipa
 
-# generated native folders
-/ios
-/android
+# ------------------------------
+# Native / secrets
+# ------------------------------
+# Native folders (managed workflow: ignore)
+ios/
+android/
+
+# Kotlin/Gradle
+.kotlin/
+*.orig.*
+
+# Keystores / signing keys / provisioning
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# ------------------------------
+# OS / Editor
+# ------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# ------------------------------
+# Misc
+# ------------------------------
+app-example/
