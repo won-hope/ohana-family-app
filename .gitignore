@@ -1,76 +1,82 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
 # ------------------------------
 # Dependencies
 # ------------------------------
 node_modules/
 
 # ------------------------------
-# Expo / React Native
+# Expo / React Native / Metro
 # ------------------------------
 .expo/
 dist/
 web-build/
 expo-env.d.ts
+.metro-health-check*
+
+# ------------------------------
+# Logs & Debugging (확장)
+# ------------------------------
 *.log
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 pnpm-debug.log*
-
-# Metro
-.metro-health-check*
+*.log.txt
 
 # ------------------------------
-# Environment files (IMPORTANT)
+# Environment files (가장 중요!!!)
 # ------------------------------
+# .env 파일은 절대 올라가면 안 됨 (패턴 강화)
 .env
 .env.*
 !.env.example
+# 혹시 모를 로컬 설정 파일들도 차단
+*.local
+
+# ------------------------------
+# Mobile Native Secrets (중요!)
+# ------------------------------
+# Firebase/Google 로그인 등을 쓴다면 이 파일들에 API 키가 들어감
+google-services.json
+GoogleService-Info.plist
+# 안드로이드 키스토어 파일 (이미 있지만 확실하게)
+*.jks
+*.keystore
+*.pepk
+*.p12
+*.p8
+*.pem
+*.key
+*.mobileprovision
 
 # ------------------------------
 # Build artifacts / caches
 # ------------------------------
-# TypeScript
 *.tsbuildinfo
-
-# EAS
 .eas/
-# if you generate builds locally
 *.apk
 *.aab
 *.ipa
+coverage/
 
 # ------------------------------
-# Native / secrets
+# Native folders (Managed workflow라면 무시)
 # ------------------------------
-# Native folders (managed workflow: ignore)
 ios/
 android/
 
-# Kotlin/Gradle
-.kotlin/
-*.orig.*
-
-# Keystores / signing keys / provisioning
-*.jks
-*.keystore
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.pem
-
 # ------------------------------
-# OS / Editor
+# OS / Editor / IDE
 # ------------------------------
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 *.swp
+*.swo
 
 # ------------------------------
-# Misc
+# Supabase / Backend specific
 # ------------------------------
-app-example/
+# Supabase CLI 등을 쓸 때 생성되는 로컬 파일들
+supabase/.branches
+supabase/.temp

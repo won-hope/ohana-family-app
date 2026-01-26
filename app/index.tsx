@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Text, View } from "react-native";
-import { savePushToken } from "../../src/lib/device";
-import { registerForPushTokenAsync } from "../../src/lib/notifications";
+import { savePushToken } from "../src/lib/device";
+import { registerForPushTokenAsync } from "../src/lib/notifications";
 
 export default function Home() {
   const [msg, setMsg] = useState("ready");
