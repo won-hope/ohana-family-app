@@ -11,6 +11,9 @@
     "ios": {
       "supportsTablet": true
     },
+    "notification": {
+      "vapidPublicKey": "BGRPXU35FaaANrJ3Eo0lNO2FFJnqXRHtMHYZkqaY2o8OvgbhrQDy2VR5N3-l3FEyFexEi9f6dnXw6AePf2gmxQo"
+    },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
