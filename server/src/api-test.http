@@ -1,0 +1,7 @@
+### 그룹 생성 테스트
+POST http://localhost:8080/groups
+Content-Type: application/json
+
+{
+  "name": "OHANA Family"
+}

@@ -38,3 +38,19 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Secrets / env files ###
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.der
+secrets/
+
+### Spring profiles (keep base application.yml) ###
+src/main/resources/application-*.yml
+!src/main/resources/application.yml

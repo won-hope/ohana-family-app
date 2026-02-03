@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ohana
-    username: ohana
-    password: ohana
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ohana}
+    username: ${DB_USER:ohana}
+    password: ${DB_PASSWORD:ohana}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -27,3 +27,6 @@ management:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: never
