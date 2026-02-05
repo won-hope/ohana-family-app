@@ -30,11 +30,12 @@ management:
     web:
       exposure:
         include: health,info
+
 ohana:
   google:
-    client-id: "545471713671-31ebg1fpoiog47dc5el6fhici0d42ec0.apps.googleusercontent.com"
+    client-id: ${OHANA_GOOGLE_CLIENT_ID:replace-me}
   jwt:
-    # 32바이트 이상 강추(HS256). 예시는 임시값이니 나중에 바꿔.
-    secret: "change-me-change-me-change-me-32bytes-minimum"
+    # 32+ bytes recommended for HS256.
+    secret: ${OHANA_JWT_SECRET:change-me-change-me-change-me-32bytes-minimum}
     issuer: "ohana-server"
     access-token-minutes: 60

@@ -11,17 +11,18 @@ class GoogleIdTokenVerifier(
     @Value("\${ohana.google.client-id}") private val googleClientId: String
 ) {
     private val decoder: JwtDecoder =
-        JwtDecoders.fromIssuerLocation("https://accounts.google.com")
+        JwtDecoders.fromOidcIssuerLocation("https://accounts.google.com")
+
     fun verify(idToken: String): Jwt {
         val jwt = decoder.decode(idToken)
 
-        // ✅ aud 체크 (내 OAuth Client ID가 맞는지)
+        // Ensure the token was issued for our OAuth client.
         val audiences = jwt.audience.orEmpty()
         require(audiences.contains(googleClientId)) {
             "Invalid audience. aud=$audiences"
         }
 
-        // 이메일/서브는 여기서 꺼내면 됨
+        // Caller can read email/sub/etc from the returned Jwt.
         return jwt
     }
 }

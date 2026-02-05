@@ -1,19 +1,16 @@
 package com.ohana.ohanaserver.group.controller
 
-import com.ohana.ohanaserver.auth.domain.User
-import com.ohana.ohanaserver.auth.repository.UserRepository
+import com.ohana.ohanaserver.auth.util.SecurityUtil
 import com.ohana.ohanaserver.group.domain.Group
 import com.ohana.ohanaserver.group.domain.GroupMember
 import com.ohana.ohanaserver.group.domain.GroupRole
 import com.ohana.ohanaserver.group.repository.GroupMemberRepository
 import com.ohana.ohanaserver.group.repository.GroupRepository
 import org.springframework.web.bind.annotation.*
-import java.util.UUID
 
 @RestController
 @RequestMapping("/groups")
 class GroupController(
-    private val userRepository: UserRepository,
     private val groupRepository: GroupRepository,
     private val groupMemberRepository: GroupMemberRepository
 ) {
@@ -25,18 +22,10 @@ class GroupController(
 
     @PostMapping
     fun createGroup(@RequestBody req: CreateGroupRequest): Group {
-        // ✅ 인증 붙기 전까지 임시 유저 생성(고정 sub)
-        val user = userRepository.findByGoogleSub("dev-user") ?: userRepository.save(
-            User(
-                googleSub = "dev-user",
-                email = "dev@ohana.local",
-                name = "Dev User"
-            )
-        )
-
+        val userId = SecurityUtil.currentUserId()
         val group = groupRepository.save(
             Group(
-                ownerUserId = user.id,
+                ownerUserId = userId,
                 name = req.name
             )
         )
@@ -44,7 +33,7 @@ class GroupController(
         groupMemberRepository.save(
             GroupMember(
                 groupId = group.id,
-                userId = user.id,
+                userId = userId,
                 role = GroupRole.OWNER
             )
         )
