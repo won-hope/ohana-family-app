@@ -3,10 +3,14 @@ server:
 
 spring:
   datasource:
+    driver-class-name: org.postgresql.Driver
+    password: ${DB_PASSWORD:ohana}
     url: ${DB_URL:jdbc:postgresql://localhost:5432/ohana}
     username: ${DB_USER:ohana}
-    password: ${DB_PASSWORD:ohana}
-    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    baseline-on-migrate: true
+    enabled: true
 
   jpa:
     hibernate:
@@ -18,15 +22,19 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
 
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-
 management:
+  endpoint:
+    health:
+      show-details: never
   endpoints:
     web:
       exposure:
         include: health,info
-  endpoint:
-    health:
-      show-details: never
+ohana:
+  google:
+    client-id: "545471713671-31ebg1fpoiog47dc5el6fhici0d42ec0.apps.googleusercontent.com"
+  jwt:
+    # 32바이트 이상 강추(HS256). 예시는 임시값이니 나중에 바꿔.
+    secret: "change-me-change-me-change-me-32bytes-minimum"
+    issuer: "ohana-server"
+    access-token-minutes: 60

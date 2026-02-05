@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot") version "3.5.10"
+    id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
 
     kotlin("jvm") version "2.0.21"
@@ -27,8 +27,9 @@ dependencies {
     // --- Security / OAuth (Google Login Only) ---
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    // 나중에 우리 JWT를 쓸 거면 이거도 고려
-    // implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
 
     // --- Observability ---
     implementation("org.springframework.boot:spring-boot-starter-actuator")
