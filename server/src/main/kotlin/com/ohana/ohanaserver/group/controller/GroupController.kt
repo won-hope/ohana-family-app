@@ -40,4 +40,15 @@ class GroupController(
 
         return group
     }
+
+    @GetMapping
+    fun listGroups(): List<Group> {
+        val userId = SecurityUtil.currentUserId()
+        val memberships = groupMemberRepository.findAllByUserId(userId)
+            .sortedBy { it.createdAt }
+        val groupsById = groupRepository.findAllById(memberships.map { it.groupId })
+            .associateBy { it.id }
+
+        return memberships.mapNotNull { groupsById[it.groupId] }
+    }
 }
