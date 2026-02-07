@@ -7,6 +7,7 @@ import com.ohana.ohanaserver.group.domain.GroupMember
 import com.ohana.ohanaserver.group.domain.GroupRole
 import com.ohana.ohanaserver.group.repository.GroupMemberRepository
 import com.ohana.ohanaserver.group.repository.GroupRepository
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 @Profile("dev")
+@ConditionalOnProperty(prefix = "ohana.dev.auth", name = ["enabled"], havingValue = "true")
 class DevDataSeeder {
 
     @Bean
