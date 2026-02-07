@@ -1,5 +1,5 @@
 ﻿@baseUrl = http://localhost:8080
-@subjectId = 3dc5f83c-6a47-4e4e-9fd6-ac27cbcf3ec9
+@subjectId = e468924d-7952-4d83-9586-6f07102125da
 
 ### 실행 순서
 # 1) Dev login 실행 -> accessToken 저장
@@ -95,3 +95,42 @@ Content-Type: application/json
 ### [2] 수유 기록 조회 (잘 들어갔나 확인)
 GET {{baseUrl}}/feedings/subject/{{subjectId}}
 Authorization: Bearer {{accessToken}}
+
+### [3] 케어 이벤트 - 대변(응가) 기록
+POST {{baseUrl}}/care-events
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "subjectId": "{{subjectId}}",
+  "type": "DIAPER_POO",
+  "occurredAt": "2026-02-06T14:00:00+09:00",
+  "idempotencyKey": "0f7f07d2-7f4b-4a76-9e52-82c0a1b6a1a1",
+  "payload": {
+    "color": "GOLD",
+    "amount": "MUCH",
+    "memo": "황금변! 상태 좋음"
+  }
+}
+
+### [4] 케어 이벤트 - 목욕 기록
+POST {{baseUrl}}/care-events
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "subjectId": "{{subjectId}}",
+  "type": "BATH",
+  "occurredAt": "2026-02-06T19:30:00+09:00",
+  "idempotencyKey": "2b64a7a1-19df-4d36-9f2b-1e7fd28f0b7d",
+  "payload": { "memo": "오늘은 아빠랑 목욕" }
+}
+
+### [5] 케어 이벤트 - 오늘 타임라인 조회
+GET {{baseUrl}}/care-events?subjectId={{subjectId}}&date=2026-02-06
+Authorization: Bearer {{accessToken}}
+
+### ✅ 케어 이벤트 테스트 순서
+# 1) Dev login 실행 -> accessToken 저장
+# 2) Subject 목록 조회 -> subjectId 확인 후 @subjectId 업데이트
+# 3) 아래 3개 요청 실행 (DIAPER_POO -> BATH -> 타임라인)

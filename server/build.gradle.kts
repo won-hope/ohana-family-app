@@ -46,7 +46,7 @@ dependencies {
 
     // --- Kotlin / Jackson ---
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin") // ✅ 오타 수정
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // --- API Docs ---
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
