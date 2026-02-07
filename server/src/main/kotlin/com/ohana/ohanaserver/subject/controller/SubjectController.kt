@@ -7,6 +7,7 @@ import com.ohana.ohanaserver.subject.service.SubjectService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
@@ -19,9 +20,12 @@ class SubjectController(
 ) {
     data class CreateSubjectRequest(
         @field:NotNull val type: SubjectType,
-        @field:NotBlank val name: String,
+        @field:NotBlank
+        @field:Size(max = 50)
+        val name: String,
         @field:DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         val birthDate: LocalDate? = null,
+        @field:Size(max = 500)
         val notes: String? = null
     )
 

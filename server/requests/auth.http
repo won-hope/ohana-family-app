@@ -134,3 +134,11 @@ Authorization: Bearer {{accessToken}}
 # 1) Dev login 실행 -> accessToken 저장
 # 2) Subject 목록 조회 -> subjectId 확인 후 @subjectId 업데이트
 # 3) 아래 3개 요청 실행 (DIAPER_POO -> BATH -> 타임라인)
+
+### [6] 대시보드 - 오늘 타임라인 조회 (수유 + 돌봄 통합)
+GET {{baseUrl}}/subjects/{{subjectId}}/timeline?date=2026-02-06
+Authorization: Bearer {{accessToken}}
+
+### [7] 대시보드 - 오늘 요약 조회
+GET {{baseUrl}}/subjects/{{subjectId}}/summary?date=2026-02-06
+Authorization: Bearer {{accessToken}}

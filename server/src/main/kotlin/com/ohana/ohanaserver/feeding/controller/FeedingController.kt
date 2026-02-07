@@ -4,7 +4,10 @@ import com.ohana.ohanaserver.auth.util.SecurityUtil
 import com.ohana.ohanaserver.feeding.domain.FeedingLog
 import com.ohana.ohanaserver.feeding.domain.FeedingMethod
 import com.ohana.ohanaserver.feeding.service.FeedingService
+import jakarta.validation.Valid
+import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import org.springframework.web.bind.annotation.*
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -18,13 +21,13 @@ class FeedingController(
         @field:NotNull val subjectId: UUID,
         @field:NotNull val idempotencyKey: UUID,
         @field:NotNull val fedAt: OffsetDateTime,
-        val amountMl: Int? = null,
+        @field:Positive val amountMl: Int? = null,
         @field:NotNull val method: FeedingMethod,
-        val note: String? = null
+        @field:Size(max = 500) val note: String? = null
     )
 
     @PostMapping
-    fun create(@RequestBody req: CreateFeedingRequest): FeedingLog {
+    fun create(@RequestBody @Valid req: CreateFeedingRequest): FeedingLog {
         val userId = SecurityUtil.currentUserId()
         return feedingService.create(
             userId = userId,

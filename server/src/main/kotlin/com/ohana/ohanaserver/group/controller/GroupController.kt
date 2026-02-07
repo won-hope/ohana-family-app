@@ -6,6 +6,9 @@ import com.ohana.ohanaserver.group.domain.GroupMember
 import com.ohana.ohanaserver.group.domain.GroupRole
 import com.ohana.ohanaserver.group.repository.GroupMemberRepository
 import com.ohana.ohanaserver.group.repository.GroupRepository
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -15,13 +18,17 @@ class GroupController(
     private val groupMemberRepository: GroupMemberRepository
 ) {
 
-    data class CreateGroupRequest(val name: String)
+    data class CreateGroupRequest(
+        @field:NotBlank
+        @field:Size(max = 50)
+        val name: String
+    )
 
     @GetMapping("/ping")
     fun ping(): Map<String, String> = mapOf("ok" to "true")
 
     @PostMapping
-    fun createGroup(@RequestBody req: CreateGroupRequest): Group {
+    fun createGroup(@RequestBody @Valid req: CreateGroupRequest): Group {
         val userId = SecurityUtil.currentUserId()
         val group = groupRepository.save(
             Group(

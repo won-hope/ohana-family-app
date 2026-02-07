@@ -4,6 +4,8 @@ import com.ohana.ohanaserver.auth.service.GoogleIdTokenVerifier
 import com.ohana.ohanaserver.auth.domain.User
 import com.ohana.ohanaserver.auth.repository.UserRepository
 import com.ohana.ohanaserver.auth.token.JwtProvider
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -13,12 +15,12 @@ class AuthController(
     private val userRepository: UserRepository,
     private val jwtProvider: JwtProvider,
 ) {
-    data class GoogleLoginRequest(val idToken: String)
+    data class GoogleLoginRequest(@field:NotBlank val idToken: String)
     data class GoogleLoginResponse(val accessToken: String)
 
     // Exchanges a Google ID token for an app access token.
     @PostMapping("/google")
-    fun login(@RequestBody req: GoogleLoginRequest): GoogleLoginResponse {
+    fun login(@RequestBody @Valid req: GoogleLoginRequest): GoogleLoginResponse {
         val jwt = verifier.verify(req.idToken)
 
         val googleSub = jwt.subject
