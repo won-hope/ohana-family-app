@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: "optional:file:.env[.properties]"
   datasource:
     driver-class-name: org.postgresql.Driver
     password: ${DB_PASSWORD:ohana}
@@ -34,6 +36,10 @@ management:
 ohana:
   google:
     client-id: ${OHANA_GOOGLE_CLIENT_ID:replace-me}
+    client-secret: ${OHANA_GOOGLE_CLIENT_SECRET:replace-me}
+    redirect-uri: "http://localhost:8080/google/sheets/connect/callback"
+  crypto:
+    token-secret: "randomstring32byteslongmustbehere!!" # 32글자 이상!
   jwt:
     # 32+ bytes recommended for HS256.
     secret: ${OHANA_JWT_SECRET:change-me-change-me-change-me-32bytes-minimum}

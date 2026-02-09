@@ -23,6 +23,7 @@ dependencies {
     // --- Web / Validation ---
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     // --- Security / OAuth (Google Login Only) ---
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -47,6 +48,10 @@ dependencies {
     // --- Kotlin / Jackson ---
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    // --- Google APIs ---
+    implementation("com.google.api-client:google-api-client:2.2.0")
+    implementation("com.google.apis:google-api-services-sheets:v4-rev20230815-2.0.0")
 
     // --- API Docs ---
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
