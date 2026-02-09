@@ -2,7 +2,7 @@ package com.ohana.ohanaserver.feeding.domain
 
 import jakarta.persistence.*
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "feeding_log")
@@ -36,6 +36,8 @@ class FeedingLog(
 
     @Column(name = "created_at", nullable = false)
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
+    @Column(name = "exported_at")
+    var exportedAt: OffsetDateTime? = null,
 )
 
 enum class FeedingMethod {

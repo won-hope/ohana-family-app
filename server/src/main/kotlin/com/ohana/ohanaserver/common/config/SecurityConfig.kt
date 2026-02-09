@@ -47,7 +47,11 @@ class SecurityConfig {
                 headers.contentSecurityPolicy { it.policyDirectives("default-src 'none'") }
             }
             .authorizeHttpRequests { auth ->
-                auth.anyRequest().authenticated()
+                auth
+                    .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
             }
             // Resource server for API calls authenticated with our JWT.
             .oauth2ResourceServer { it.jwt {} }

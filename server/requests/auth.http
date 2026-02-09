@@ -8,14 +8,6 @@
 # 4) @subjectId에 붙여넣기
 # 5) 수유 기록 등록 -> 멱등성 테스트 -> 수유 기록 조회
 
-### Google login (replace idToken)
-POST {{baseUrl}}/auth/google
-Content-Type: application/json
-
-{
-  "idToken": "REPLACE_WITH_GOOGLE_ID_TOKEN"
-}
-
 ### Dev login (requires spring profile: dev)
 POST {{baseUrl}}/auth/dev
 
@@ -48,7 +40,7 @@ Content-Type: application/json
   "notes": "귀여운 아들"
 }
 
-### Subject 생성 (코코)
+### Subject 생성 (hope)
 POST {{baseUrl}}/subjects
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -141,4 +133,8 @@ Authorization: Bearer {{accessToken}}
 
 ### [7] 대시보드 - 오늘 요약 조회
 GET {{baseUrl}}/subjects/{{subjectId}}/summary?date=2026-02-06
+Authorization: Bearer {{accessToken}}
+
+### 배치 강제 실행 (오늘 날짜)
+POST http://localhost:8080/test/export-now
 Authorization: Bearer {{accessToken}}

@@ -32,4 +32,22 @@ interface FeedingLogRepository : JpaRepository<FeedingLog, UUID> {
         @Param("from") from: OffsetDateTime,
         @Param("to") to: OffsetDateTime
     ): List<FeedingLog>
+
+    // ✅ [Step 4 추가] 배치용: 특정 기간 내 미전송 기록 조회
+    @Query(
+        """
+        select f from FeedingLog f
+        where f.groupId = :groupId
+          and f.fedAt >= :from
+          and f.fedAt < :to
+          and f.exportedAt is null
+        order by f.fedAt asc
+    """
+    )
+    fun findUnexportedInRange(
+        @Param("groupId") groupId: UUID,
+        @Param("from") from: OffsetDateTime,
+        @Param("to") to: OffsetDateTime
+    ): List<FeedingLog>
+
 }
