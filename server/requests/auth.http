@@ -1,37 +1,42 @@
-﻿@baseUrl = http://localhost:8080
+﻿### ==========================================
+### Environment Variables
+### ==========================================
+@baseUrl = http://localhost:8080
+@contentType = application/json
+# ⚠️ 아래 subjectId는 'Subject 목록 조회' 후 실제 ID로 교체할 것
 @subjectId = e468924d-7952-4d83-9586-6f07102125da
 
-### 실행 순서
-# 1) Dev login 실행 -> accessToken 저장
-# 2) (최초 1회) Create group 실행
-# 3) Subject 생성 -> Subject 목록 조회로 subjectId 확인
-# 4) @subjectId에 붙여넣기
-# 5) 수유 기록 등록 -> 멱등성 테스트 -> 수유 기록 조회
 
-### Dev login (requires spring profile: dev)
+### ==========================================
+### 1. Auth & Setup (Onboarding)
+### ==========================================
+
+### [Auth] Dev Login (requires spring profile: dev)
 POST {{baseUrl}}/auth/dev
+Content-Type: {{contentType}}
 
 > {%
-  client.global.set("accessToken", response.body.accessToken);
+    client.global.set("accessToken", response.body.accessToken);
+    client.log("Access Token Acquired");
 %}
 
-### Create group (uses dev token)
+### [Group] Create Group (최초 1회)
 POST {{baseUrl}}/groups
-Content-Type: application/json
 Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
 
 {
-  "name": "My First Group"
+  "name": "Ohana Family"
 }
 
-### 내 그룹 목록 조회 (그룹 있는지 확인)
+### [Group] 내 그룹 목록 조회
 GET {{baseUrl}}/groups
 Authorization: Bearer {{accessToken}}
 
-### Subject 생성 (도현이)
+### [Subject] 생성 - Baby (도현)
 POST {{baseUrl}}/subjects
 Authorization: Bearer {{accessToken}}
-Content-Type: application/json
+Content-Type: {{contentType}}
 
 {
   "type": "BABY",
@@ -40,58 +45,58 @@ Content-Type: application/json
   "notes": "귀여운 아들"
 }
 
-### Subject 생성 (hope)
+### [Subject] 생성 - Pet (Hope)
 POST {{baseUrl}}/subjects
 Authorization: Bearer {{accessToken}}
-Content-Type: application/json
+Content-Type: {{contentType}}
 
 {
   "type": "PET",
-  "name": "hope",
+  "name": "Hope",
   "notes": "닥스훈트, 심장사상충 매월 25일"
 }
 
-### Subject 목록 조회
+### [Subject] 목록 조회 (여기서 ID 확인해서 상단 @subjectId 업데이트)
 GET {{baseUrl}}/subjects
 Authorization: Bearer {{accessToken}}
 
-### [1] 수유 기록 등록 (도현이가 160ml 먹음)
+
+### ==========================================
+### 2. Domain Actions (Write)
+### ==========================================
+
+### [Feeding] 수유 기록 등록
 POST {{baseUrl}}/feedings
 Authorization: Bearer {{accessToken}}
-Content-Type: application/json
+Content-Type: {{contentType}}
 
 {
   "subjectId": "{{subjectId}}",
-  "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+  "idempotencyKey": "550e8400-e29b-41d4-a716-446655440001",
   "fedAt": "2026-02-06T12:30:00+09:00",
   "amountMl": 160,
   "method": "BOTTLE",
   "note": "꿀꺽꿀꺽 잘 먹음"
 }
 
-### [1-2] 수유 기록 등록 (멱등성 테스트)
-# ⚠️ UUID를 고정해놓고 여러 번 실행해봐!
+### [Feeding] 멱등성 테스트 (동일 Key 재전송 -> 에러 혹은 동일 결과)
 POST {{baseUrl}}/feedings
 Authorization: Bearer {{accessToken}}
-Content-Type: application/json
+Content-Type: {{contentType}}
 
 {
   "subjectId": "{{subjectId}}",
-  "idempotencyKey": "550e8400-e29b-41d4-a716-446655440000",
+  "idempotencyKey": "550e8400-e29b-41d4-a716-446655440001",
   "fedAt": "2026-02-06T13:00:00+09:00",
   "amountMl": 180,
   "method": "BOTTLE",
-  "note": "멱등성 테스트 중"
+  "note": "Duplicate Check"
 }
 
-### [2] 수유 기록 조회 (잘 들어갔나 확인)
-GET {{baseUrl}}/feedings/subject/{{subjectId}}
-Authorization: Bearer {{accessToken}}
-
-### [3] 케어 이벤트 - 대변(응가) 기록
+### [Care] 대변(Poo) 기록
 POST {{baseUrl}}/care-events
 Authorization: Bearer {{accessToken}}
-Content-Type: application/json
+Content-Type: {{contentType}}
 
 {
   "subjectId": "{{subjectId}}",
@@ -105,10 +110,10 @@ Content-Type: application/json
   }
 }
 
-### [4] 케어 이벤트 - 목욕 기록
+### [Care] 목욕(Bath) 기록
 POST {{baseUrl}}/care-events
 Authorization: Bearer {{accessToken}}
-Content-Type: application/json
+Content-Type: {{contentType}}
 
 {
   "subjectId": "{{subjectId}}",
@@ -118,36 +123,41 @@ Content-Type: application/json
   "payload": { "memo": "오늘은 아빠랑 목욕" }
 }
 
-### [5] 케어 이벤트 - 오늘 타임라인 조회
+
+### ==========================================
+### 3. Dashboard (Read)
+### ==========================================
+
+### [Feeding] 단일 Subject 수유 이력 조회
+GET {{baseUrl}}/feedings/subject/{{subjectId}}
+Authorization: Bearer {{accessToken}}
+
+### [Care] 단일 Subject 케어 이력 조회
 GET {{baseUrl}}/care-events?subjectId={{subjectId}}&date=2026-02-06
 Authorization: Bearer {{accessToken}}
 
-### ✅ 케어 이벤트 테스트 순서
-# 1) Dev login 실행 -> accessToken 저장
-# 2) Subject 목록 조회 -> subjectId 확인 후 @subjectId 업데이트
-# 3) 아래 3개 요청 실행 (DIAPER_POO -> BATH -> 타임라인)
-
-### [6] 대시보드 - 오늘 타임라인 조회 (수유 + 돌봄 통합)
+### [Unified] 타임라인 통합 조회 (Feeding + Care)
 GET {{baseUrl}}/subjects/{{subjectId}}/timeline?date=2026-02-06
 Authorization: Bearer {{accessToken}}
 
-### [7] 대시보드 - 오늘 요약 조회
+### [Summary] 일일 요약 조회
 GET {{baseUrl}}/subjects/{{subjectId}}/summary?date=2026-02-06
 Authorization: Bearer {{accessToken}}
 
-### 배치 강제 실행 (오늘 날짜)
-POST http://localhost:8080/test/export-now
+
+### ==========================================
+### 4. Operations & Integrations
+### ==========================================
+
+### [Ops] 배치 강제 실행 (Google Sheets Export)
+POST {{baseUrl}}/test/export-now
 Authorization: Bearer {{accessToken}}
 
-### --- Google Sheets 연결 테스트 ---
-### 1) 연결 시작 (URL 받기)
+### [Google] 1) 연결 시작 (OAuth URL 발급)
 POST {{baseUrl}}/google/sheets/connect/start
 Authorization: Bearer {{accessToken}}
 
-> {%
-  client.global.set("googleAuthUrl", response.body.url);
-%}
-
-### 2) 브라우저에서 url 열고 동의 후,
-###    리다이렉트된 callback URL의 code/state를 아래에 넣어서 호출
-GET {{baseUrl}}/google/sheets/connect/callback?code={{googleAuthCode}}&state={{googleAuthState}}
+### [Google] 2) Callback (Manual)
+# 브라우저에서 위 URL 접속 -> 동의 -> 리다이렉트된 URL의 code, state 복사해서 아래 실행
+# 예: http://localhost:8080/google/sheets/connect/callback?code=4/0A...&state=...
+GET {{baseUrl}}/google/sheets/connect/callback?code=YOUR_CODE_HERE&state=YOUR_STATE_HERE
