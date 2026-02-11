@@ -25,6 +25,7 @@ class GoogleOAuthService(
     private val connRepo: GroupGoogleSheetsConnectionRepository,
     private val tokenCrypto: TokenCrypto
 ) {
+
     private val webClient = WebClient.create()
     private val jsonFactory = GsonFactory.getDefaultInstance()
     private val transport = GoogleNetHttpTransport.newTrustedTransport()
@@ -35,13 +36,13 @@ class GoogleOAuthService(
         val redirect = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
 
         return "https://accounts.google.com/o/oauth2/v2/auth" +
-            "?client_id=$clientId" +
-            "&redirect_uri=$redirect" +
-            "&response_type=code" +
-            "&scope=$scope" +
-            "&access_type=offline" + // Refresh Token 필수!
-            "&prompt=consent" +
-            "&state=$state"
+                "?client_id=$clientId" +
+                "&redirect_uri=$redirect" +
+                "&response_type=code" +
+                "&scope=$scope" +
+                "&access_type=offline" + // Refresh Token 필수!
+                "&prompt=consent" +
+                "&state=$state"
     }
 
     // 2. 콜백 처리 (토큰 교환 -> 시트 생성 -> DB 저장)
