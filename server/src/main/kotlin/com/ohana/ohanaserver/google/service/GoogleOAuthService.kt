@@ -32,14 +32,19 @@ class GoogleOAuthService(
 
     // 1. 동의 URL 생성
     fun buildConsentUrl(state: String): String {
-        val scope = URLEncoder.encode("https://www.googleapis.com/auth/spreadsheets", StandardCharsets.UTF_8)
-        val redirect = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
+        val scopes = listOf(
+            "https://www.googleapis.com/auth/spreadsheets", // 기존 (시트)
+            "https://www.googleapis.com/auth/calendar"      // ✅ 신규 (캘린더) 추가!
+        ).joinToString(" ")
+
+        val scopeEncoded = URLEncoder.encode(scopes, StandardCharsets.UTF_8)
+        val redirectEncoded = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8)
 
         return "https://accounts.google.com/o/oauth2/v2/auth" +
                 "?client_id=$clientId" +
-                "&redirect_uri=$redirect" +
+                "&redirect_uri=$redirectEncoded" +
                 "&response_type=code" +
-                "&scope=$scope" +
+                "&scope=$scopeEncoded" +
                 "&access_type=offline" + // Refresh Token 필수!
                 "&prompt=consent" +
                 "&state=$state"
@@ -84,7 +89,7 @@ class GoogleOAuthService(
 
     // --- Helper Methods ---
 
-    private data class TokenResponse(val access_token: String, val refresh_token: String?)
+    data class TokenResponse(val access_token: String, val refresh_token: String?)
 
     private fun exchangeCode(code: String): TokenResponse {
         return webClient.post()
@@ -92,6 +97,18 @@ class GoogleOAuthService(
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .bodyValue(
                 "code=$code&client_id=$clientId&client_secret=$clientSecret&redirect_uri=$redirectUri&grant_type=authorization_code"
+            )
+            .retrieve()
+            .bodyToMono(TokenResponse::class.java)
+            .block()!!
+    }
+
+    fun refreshAccessToken(refreshToken: String): TokenResponse {
+        return webClient.post()
+            .uri("https://oauth2.googleapis.com/token")
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .bodyValue(
+                "client_id=$clientId&client_secret=$clientSecret&refresh_token=$refreshToken&grant_type=refresh_token"
             )
             .retrieve()
             .bodyToMono(TokenResponse::class.java)

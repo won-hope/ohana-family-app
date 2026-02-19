@@ -34,7 +34,8 @@ enum class TimelineCategory {
 data class FeedingItem(
     val amountMl: Int?,
     val method: FeedingMethod,
-    val note: String?
+    val note: String?,
+    val durationSeconds: Int?
 )
 
 data class CareItem(

@@ -61,7 +61,8 @@ class FeedingSheetsExportService(
                     log.subjectId.toString(),
                     (log.amountMl ?: ""),
                     (log.method.name),
-                    (log.note ?: ""), // note 필드명 확인!
+                    (log.note ?: ""),
+                    (log.durationSeconds ?: ""),
                     log.createdBy.toString()
                 )
             }

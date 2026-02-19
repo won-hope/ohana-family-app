@@ -16,7 +16,7 @@ class SecurityConfig {
     fun publicFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             // Public endpoints: health/docs and auth entry points.
-            .securityMatcher("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**")
+            .securityMatcher("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/google/sheets/connect/callback")
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .headers { headers ->
@@ -48,7 +48,7 @@ class SecurityConfig {
             }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**")
+                    .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/google/sheets/connect/callback")
                     .permitAll()
                     .anyRequest()
                     .authenticated()

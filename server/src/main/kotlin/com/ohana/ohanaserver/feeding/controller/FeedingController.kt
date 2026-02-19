@@ -23,7 +23,8 @@ class FeedingController(
         @field:NotNull val fedAt: OffsetDateTime,
         @field:Positive val amountMl: Int? = null,
         @field:NotNull val method: FeedingMethod,
-        @field:Size(max = 500) val note: String? = null
+        @field:Size(max = 500) val note: String? = null,
+        @field:Positive val durationSeconds: Int? = null
     )
 
     @PostMapping
@@ -36,7 +37,8 @@ class FeedingController(
             fedAt = req.fedAt,
             amountMl = req.amountMl,
             method = req.method,
-            note = req.note
+            note = req.note,
+            durationSeconds = req.durationSeconds
         )
     }
 

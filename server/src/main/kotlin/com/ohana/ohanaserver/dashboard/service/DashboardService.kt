@@ -53,7 +53,8 @@ class DashboardService(
                     feeding = FeedingItem(
                         amountMl = it.amountMl,
                         method = it.method,
-                        note = it.note
+                        note = it.note,
+                        durationSeconds = it.durationSeconds
                     )
                 )
             }

@@ -28,6 +28,9 @@ class FeedingLog(
 
     val note: String? = null,
 
+    @Column(name = "duration_seconds")
+    val durationSeconds: Int? = null,
+
     @Column(name = "created_by", nullable = false)
     val createdBy: UUID,
 
@@ -41,5 +44,5 @@ class FeedingLog(
 )
 
 enum class FeedingMethod {
-    BOTTLE, BREAST, MIXED
+    BOTTLE, BREAST, MIXED, SOLIDS
 }

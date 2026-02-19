@@ -161,3 +161,54 @@ Authorization: Bearer {{accessToken}}
 # 브라우저에서 위 URL 접속 -> 동의 -> 리다이렉트된 URL의 code, state 복사해서 아래 실행
 # 예: http://localhost:8080/google/sheets/connect/callback?code=4/0A...&state=...
 GET {{baseUrl}}/google/sheets/connect/callback?code=YOUR_CODE_HERE&state=YOUR_STATE_HERE
+
+### ==========================================
+### 5. Health & Growth
+### ==========================================
+
+### [Growth] 성장 기록 등록 (키, 몸무게)
+POST {{baseUrl}}/health/growth
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "subjectId": "{{subjectId}}",
+  "date": "2026-02-19",
+  "weight": 7.5,
+  "height": 65.0,
+  "head": 42.0
+}
+
+### [Growth] 홈 화면용 최신 성장 요약 조회
+GET {{baseUrl}}/health/growth/latest-summary?subjectId={{subjectId}}
+Authorization: Bearer {{accessToken}}
+
+### ==========================================
+### 6. Vaccination (예방접종)
+### ==========================================
+
+### [Vaccination] 1. 일정 자동 생성 (최초 1회)
+# 이 API를 호출하면 구글 캘린더에도 일정이 생성됩니다.
+POST {{baseUrl}}/health/vaccinations/{{subjectId}}/init
+Authorization: Bearer {{accessToken}}
+
+### [Vaccination] 2. 홈 화면 알림 (지연/임박 리스트)
+GET {{baseUrl}}/health/vaccinations/{{subjectId}}/alerts
+Authorization: Bearer {{accessToken}}
+
+### [Vaccination] 3. 전체 일정표 (캘린더)
+GET {{baseUrl}}/health/vaccinations/{{subjectId}}
+Authorization: Bearer {{accessToken}}
+
+### [Vaccination] 4. 접종 완료 체크 (예: B형간염 1차 완료)
+# ⚠️ 아래 ID는 '전체 일정표' 조회 후 실제 ID로 교체할 것
+@vaccinationId = YOUR_VACCINATION_ID_HERE
+
+POST {{baseUrl}}/health/vaccinations/{{vaccinationId}}/complete
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "date": "2025-11-06",
+  "hospital": "서울대병원"
+}

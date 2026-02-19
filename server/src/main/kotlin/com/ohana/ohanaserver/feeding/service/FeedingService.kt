@@ -29,7 +29,8 @@ class FeedingService(
         fedAt: OffsetDateTime,
         amountMl: Int?,
         method: FeedingMethod,
-        note: String?
+        note: String?,
+        durationSeconds: Int?
     ): FeedingLog {
         val groupId = groupIdOf(userId)
 
@@ -49,6 +50,7 @@ class FeedingService(
                 amountMl = amountMl,
                 method = method,
                 note = note,
+                durationSeconds = durationSeconds,
                 createdBy = userId,
                 idempotencyKey = idempotencyKey
             )
