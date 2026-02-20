@@ -11,6 +11,7 @@ import com.ohana.ohanaserver.common.crypto.TokenCrypto
 import com.ohana.ohanaserver.google.repository.GroupGoogleSheetsConnectionRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.Date
 import java.util.UUID
@@ -80,6 +81,36 @@ class GoogleCalendarService(
             calendar.events().update("primary", eventId, event).execute()
         } catch (e: Exception) {
             println("캘린더 수정 실패 (삭제된 일정일 수 있음): ${e.message}")
+        }
+    }
+
+    // 3. 시간에 맞춘 캘린더 이벤트 생성 (GoogleCalendarService.kt 내부에 추가)
+    fun createTimeBoundEvent(groupId: UUID, title: String, desc: String, start: OffsetDateTime, end: OffsetDateTime): String? {
+        return try {
+            val calendar = getClient(groupId)
+
+            // OffsetDateTime -> Google DateTime 포맷 변환
+            val startDateTime = DateTime(start.toInstant().toEpochMilli())
+            val endDateTime = DateTime(end.toInstant().toEpochMilli())
+
+            val event = Event()
+                .setSummary("🤝 $title") // 예: "🤝 마트 장보기"
+                .setDescription(desc)
+                .setStart(EventDateTime().setDateTime(startDateTime))
+                .setEnd(EventDateTime().setDateTime(endDateTime))
+                .setReminders(
+                    Event.Reminders()
+                        .setUseDefault(false)
+                        .setOverrides(listOf(
+                            EventReminder().setMethod("popup").setMinutes(60) // 1시간 전 알림
+                        ))
+                )
+
+            val created = calendar.events().insert("primary", event).execute()
+            created.id
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

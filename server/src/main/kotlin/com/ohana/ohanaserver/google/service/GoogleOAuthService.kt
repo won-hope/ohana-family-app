@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.UUID
@@ -53,7 +54,9 @@ class GoogleOAuthService(
     // 2. 콜백 처리 (토큰 교환 -> 시트 생성 -> DB 저장)
     fun processCallback(code: String, groupId: UUID): String {
         // A. 토큰 교환
-        val tokenRes = exchangeCode(code)
+        // URL Decode code if needed (sometimes it comes encoded)
+        val decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8)
+        val tokenRes = exchangeCode(decodedCode)
         val refreshToken = tokenRes.refresh_token
             ?: throw IllegalStateException("No refresh token! (prompt=consent 확인)")
 
@@ -64,11 +67,14 @@ class GoogleOAuthService(
         ).execute()
 
         val spreadsheetId = spreadsheet.spreadsheetId
+        
+        // 👇 [수정] 시트 이름을 동적으로 가져오기
+        val firstSheetName = spreadsheet.sheets[0].properties.title
 
         // C. 헤더 추가
         val header = ValueRange().setValues(listOf(listOf("Time", "Subject", "Amount", "Method", "Note", "Who")))
         sheets.spreadsheets().values()
-            .append(spreadsheetId, "Sheet1!A1", header)
+            .append(spreadsheetId, "$firstSheetName!A1", header)
             .setValueInputOption("RAW")
             .execute()
 
@@ -78,9 +84,9 @@ class GoogleOAuthService(
                 groupId = groupId,
                 googleSub = "unknown",
                 spreadsheetId = spreadsheetId,
-                sheetName = "Sheet1",
+                sheetName = firstSheetName, // 👇 DB에도 진짜 이름으로 저장!
                 refreshTokenEncrypted = tokenCrypto.encrypt(refreshToken),
-                scopes = "spreadsheets"
+                scopes = "spreadsheets calendar"
             )
         )
 

@@ -55,6 +55,9 @@ dependencies {
     implementation("com.google.apis:google-api-services-sheets:v4-rev20230815-2.0.0")
     implementation("com.google.apis:google-api-services-calendar:v3-rev20220715-2.0.0")
 
+    // --- Firebase ---
+    implementation("com.google.firebase:firebase-admin:9.2.0")
+
     // --- API Docs ---
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 

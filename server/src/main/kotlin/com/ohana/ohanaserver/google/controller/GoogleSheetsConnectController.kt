@@ -36,6 +36,7 @@ class GoogleSheetsConnectController(
         @RequestParam code: String,
         @RequestParam state: String
     ): String {
+        // state 파라미터가 groupId로 전달됨
         val groupId = UUID.fromString(state)
         val sheetUrl = oauthService.processCallback(code, groupId)
         return "연동 성공! 시트 주소: $sheetUrl"

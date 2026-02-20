@@ -8,6 +8,8 @@ import com.ohana.ohanaserver.care.repository.CareEventRepository
 import com.ohana.ohanaserver.common.exception.FieldError
 import com.ohana.ohanaserver.common.exception.ValidationException
 import com.ohana.ohanaserver.group.repository.GroupMemberRepository
+import com.ohana.ohanaserver.inventory.domain.ItemType
+import com.ohana.ohanaserver.inventory.service.InventoryService
 import com.ohana.ohanaserver.subject.repository.SubjectRepository
 import jakarta.validation.Validator
 import jakarta.validation.constraints.DecimalMax
@@ -28,7 +30,8 @@ class CareEventService(
     private val subjectRepository: SubjectRepository,
     private val careEventRepository: CareEventRepository,
     private val objectMapper: ObjectMapper,
-    private val validator: Validator
+    private val validator: Validator,
+    private val inventoryService: InventoryService
 ) {
     private val zone = ZoneId.of("Asia/Seoul")
 
@@ -58,7 +61,7 @@ class CareEventService(
         careEventRepository.findBySubjectIdAndIdempotencyKey(subjectId, idempotencyKey)
             ?.let { return it }
 
-        return careEventRepository.save(
+        val savedEvent = careEventRepository.save(
             CareEvent(
                 groupId = groupId,
                 subjectId = subjectId,
@@ -69,6 +72,22 @@ class CareEventService(
                 idempotencyKey = idempotencyKey
             )
         )
+
+        // 💡 기저귀 자동 차감 연동!
+        if (type == CareEventType.DIAPER_PEE || type == CareEventType.DIAPER_POO) {
+            try {
+                inventoryService.decreaseStock(
+                    groupId, 
+                    ItemType.DIAPER, 
+                    1
+                )
+            } catch (e: Exception) {
+                // 재고 차감에 실패해도 육아 기록은 정상 저장되어야 하므로 예외 처리
+                println("재고 차감 에러: ${e.message}")
+            }
+        }
+
+        return savedEvent
     }
 
     fun listByDate(userId: UUID, subjectId: UUID, date: LocalDate): List<CareEvent> {
