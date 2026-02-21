@@ -23,8 +23,10 @@ class SecurityConfig {
             .securityMatcher(
                 "/actuator/**",
                 "/swagger-ui/**",
-                "/swagger-ui.html", // 혹시 몰라서 이것도 추가!
+                "/swagger-ui.html",
+                "/v3/api-docs",
                 "/v3/api-docs/**",
+                "/swagger-resources/**",
                 "/auth/**",
                 "/google/sheets/connect/callback"
             )
@@ -41,7 +43,7 @@ class SecurityConfig {
                         "geolocation=(), microphone=(), camera=()"
                     )
                 )
-                // 🚨 핵심 수정 부분: Swagger UI가 화면을 그릴 수 있도록 자바스크립트/CSS 허용!
+                // Swagger UI가 화면을 그릴 수 있도록 자바스크립트/CSS 허용
                 headers.contentSecurityPolicy {
                     it.policyDirectives("script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self';")
                 }
@@ -70,7 +72,6 @@ class SecurityConfig {
                         "geolocation=(), microphone=(), camera=()"
                     )
                 )
-                // 일반 보안 체인에서도 너무 빡빡하지 않게 기본 허용치로 변경
                 headers.contentSecurityPolicy {
                     it.policyDirectives("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self';")
                 }
@@ -80,7 +81,10 @@ class SecurityConfig {
                     .requestMatchers(
                         "/actuator/**",
                         "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs",
                         "/v3/api-docs/**",
+                        "/swagger-resources/**",
                         "/auth/**",
                         "/google/sheets/connect/callback"
                     )
