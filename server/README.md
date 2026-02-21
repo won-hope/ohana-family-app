@@ -3,6 +3,34 @@
 Backend for Ohana family app. Provides auth, groups, subjects, feeding logs, care events, and dashboard
 timeline/summary.
 
+## 🚀 Getting Started (Local Development)
+
+### 1. Prerequisites
+- Java 21 (JDK 21)
+- Docker & Docker Compose (for PostgreSQL)
+
+### 2. Environment Setup
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Open `.env` and fill in the required values (ask team members for secrets or use your own for local dev).
+   - `OHANA_JWT_SECRET`: Must be at least 32 characters.
+   - `OHANA_CRYPTO_TOKEN_SECRET`: Must be at least 32 characters.
+
+### 3. Run Database
+```bash
+docker compose up -d
+```
+
+### 4. Run Server
+```bash
+./gradlew bootRun
+```
+The server will start at `http://localhost:8080`.
+
+---
+
 ## Flow
 
 1) **Auth**
@@ -20,6 +48,10 @@ timeline/summary.
 5) **Dashboard**
     - `GET /subjects/{subjectId}/timeline?date=YYYY-MM-DD`
     - `GET /subjects/{subjectId}/summary?date=YYYY-MM-DD`
+6) **Ledger (Household Account)**
+    - `POST /ledger-transactions` to log expenses/income
+7) **Schedule**
+    - `POST /family-schedules` to propose a shared schedule
 
 ## Current Development Status
 
@@ -30,15 +62,8 @@ timeline/summary.
 - **Dashboard**: unified timeline (feeding + care) and daily summary.
 - **Validation**: request validation + payload validation for care events.
 - **Errors**: unified error response format with HTTP status mapping.
-- **Flyway**: migrations V1~V6, care_event table included.
+- **Flyway**: migrations V1~V20.
 - **API tests**: `requests/auth.http` includes auth/group/subject/feeding/care/dashboard flows.
-
-## Run Locally
-
-1) Start Postgres
-    - `docker compose up -d`
-2) Run server
-    - `./gradlew bootRun`
 
 ## Configuration
 
@@ -49,6 +74,7 @@ Environment variables (defaults in `application.yml`):
 - `DB_PASSWORD` (default `ohana`)
 - `OHANA_GOOGLE_CLIENT_ID`
 - `OHANA_JWT_SECRET` (32+ bytes recommended)
+- `OHANA_CRYPTO_TOKEN_SECRET` (32+ bytes recommended)
 - `OHANA_DEV_AUTH_ENABLED` (set `true` only in dev to enable `/auth/dev` and dev seed data)
 - `OHANA_ALLOW_DEV_PROFILE` (set `true` to allow running with `dev` profile)
 - `OHANA_RATE_LIMIT_ENABLED` (default `true`)
@@ -77,6 +103,8 @@ Environment variables (defaults in `application.yml`):
 | Care      | GET    | `/care-events/latest`            | Latest care event by type       |
 | Dashboard | GET    | `/subjects/{subjectId}/timeline` | Unified timeline                |
 | Dashboard | GET    | `/subjects/{subjectId}/summary`  | Daily summary                   |
+| Ledger    | POST   | `/ledger-transactions`           | Create transaction              |
+| Schedule  | POST   | `/family-schedules`              | Create family schedule          |
 
 ## Database Overview (ERD-lite)
 
@@ -86,7 +114,9 @@ group_member (id, group_id -> app_group.id, user_id, role, created_at)
 subject (id, group_id -> app_group.id, type, name, birth_date, notes, created_at)
 feeding_log (id, group_id -> app_group.id, subject_id -> subject.id, fed_at, amount_ml, method, note, created_by, idempotency_key, created_at)
 care_event (id, group_id -> app_group.id, subject_id -> subject.id, type, occurred_at, payload, created_by_user_id, idempotency_key, created_at)
-user (id, google_subgoogle_sub, email, name, picture_url, created_at)
+ledger_transaction (id, group_id -> app_group.id, transaction_type, amount, transaction_date, category, created_by_user_id, created_at)
+family_schedule (id, group_id -> app_group.id, creator_id, assignee_id, title, start_time, end_time, status, google_event_id, created_at)
+user (id, google_sub, email, name, picture_url, created_at)
 ```
 
 ## Auth/Authorization Flow (Sequence)

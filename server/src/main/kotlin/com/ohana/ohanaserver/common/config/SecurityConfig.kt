@@ -5,8 +5,9 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
+import org.springframework.security.web.header.writers.StaticHeadersWriter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -19,7 +20,13 @@ class SecurityConfig {
     fun publicFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             // Public endpoints: health/docs and auth entry points.
-            .securityMatcher("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/google/sheets/connect/callback")
+            .securityMatcher(
+                "/actuator/**",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/auth/**",
+                "/google/sheets/connect/callback"
+            )
             .cors { it.configurationSource(corsConfigurationSource()) } // CORS 활성화
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
@@ -27,7 +34,13 @@ class SecurityConfig {
                 headers.contentTypeOptions { }
                 headers.frameOptions { it.deny() }
                 headers.referrerPolicy { it.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER) }
-                headers.permissionsPolicy { it.policy("geolocation=(), microphone=(), camera=()") }
+                // Deprecated된 permissionsPolicy 대신 addHeaderWriter 사용
+                headers.addHeaderWriter(
+                    StaticHeadersWriter(
+                        "Permissions-Policy",
+                        "geolocation=(), microphone=(), camera=()"
+                    )
+                )
                 headers.contentSecurityPolicy { it.policyDirectives("default-src 'none'") }
             }
             .authorizeHttpRequests { auth ->
@@ -48,17 +61,27 @@ class SecurityConfig {
                 headers.contentTypeOptions { }
                 headers.frameOptions { it.deny() }
                 headers.referrerPolicy { it.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER) }
-                headers.permissionsPolicy { it.policy("geolocation=(), microphone=(), camera=()") }
+                headers.addHeaderWriter(
+                    StaticHeadersWriter(
+                        "Permissions-Policy",
+                        "geolocation=(), microphone=(), camera=()"
+                    )
+                )
                 headers.contentSecurityPolicy { it.policyDirectives("default-src 'none'") }
             }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/google/sheets/connect/callback")
+                    .requestMatchers(
+                        "/actuator/**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/auth/**",
+                        "/google/sheets/connect/callback"
+                    )
                     .permitAll()
                     .anyRequest()
                     .authenticated()
             }
-            // Resource server for API calls authenticated with our JWT.
             .oauth2ResourceServer { it.jwt {} }
 
         return http.build()
@@ -71,7 +94,7 @@ class SecurityConfig {
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
-        
+
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source
