@@ -3,11 +3,14 @@ package com.ohana.ohanaserver.medical.controller
 import com.ohana.ohanaserver.auth.util.SecurityUtil
 import com.ohana.ohanaserver.medical.domain.MedicalRecord
 import com.ohana.ohanaserver.medical.service.MedicalService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.*
 import java.time.OffsetDateTime
 import java.util.UUID
 
+@Tag(name = "의료", description = "체온/투약 기록 관련 API")
 @RestController
 @RequestMapping("/medical")
 class MedicalController(
@@ -28,7 +31,7 @@ class MedicalController(
         val memo: String?
     )
 
-    // 🌡️ 체온 기록
+    @Operation(summary = "체온 기록", description = "체온 측정 결과를 기록합니다.")
     @PostMapping("/temperatures")
     fun recordTemperature(@RequestBody req: TempRequest): MedicalRecord {
         val userId = SecurityUtil.currentUserId()
@@ -37,7 +40,7 @@ class MedicalController(
         )
     }
 
-    // 💊 투약 기록
+    @Operation(summary = "투약 기록", description = "해열제 등 약 투약 기록을 남깁니다.")
     @PostMapping("/medications")
     fun recordMedication(@RequestBody req: MedRequest): MedicalRecord {
         val userId = SecurityUtil.currentUserId()
@@ -46,7 +49,7 @@ class MedicalController(
         )
     }
 
-    // 📈 그래프 차트 데이터 조회 (GET /medical/subjects/{id}/temperatures/chart?start=...&end=...)
+    @Operation(summary = "체온 그래프 데이터 조회", description = "특정 기간의 체온 기록을 차트용으로 조회합니다.")
     @GetMapping("/subjects/{subjectId}/temperatures/chart")
     fun getTemperatureChart(
         @PathVariable subjectId: UUID,

@@ -27,12 +27,10 @@ spring:
 
 springdoc:
   api-docs:
-    enabled: true        # 운영 환경에서도 문서 생성을 허용
+    enabled: true
   swagger-ui:
-    enabled: true        # 스웨거 UI 화면을 활성화
-    path: /swagger-ui/index.html  # 접속 경로 고정
-    operations-sorter: alpha      # API 목록을 알파벳 순으로 정렬
-# ------------------------------
+    enabled: true
+    operations-sorter: alpha
 
 management:
   endpoint:

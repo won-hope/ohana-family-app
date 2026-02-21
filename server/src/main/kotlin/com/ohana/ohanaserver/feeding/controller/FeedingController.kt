@@ -4,6 +4,8 @@ import com.ohana.ohanaserver.auth.util.SecurityUtil
 import com.ohana.ohanaserver.feeding.domain.FeedingLog
 import com.ohana.ohanaserver.feeding.domain.FeedingMethod
 import com.ohana.ohanaserver.feeding.service.FeedingService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.NotNull
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*
 import java.time.OffsetDateTime
 import java.util.UUID
 
+@Tag(name = "수유", description = "수유 기록 관련 API")
 @RestController
 @RequestMapping("/feedings")
 class FeedingController(
@@ -27,6 +30,7 @@ class FeedingController(
         @field:Positive val durationSeconds: Int? = null
     )
 
+    @Operation(summary = "수유 기록 생성", description = "새로운 수유 기록을 등록합니다.")
     @PostMapping
     fun create(@RequestBody @Valid req: CreateFeedingRequest): FeedingLog {
         val userId = SecurityUtil.currentUserId()
@@ -42,6 +46,7 @@ class FeedingController(
         )
     }
 
+    @Operation(summary = "대상별 수유 기록 조회", description = "특정 대상(아이/반려동물)의 수유 기록 목록을 조회합니다.")
     @GetMapping("/subject/{subjectId}")
     fun list(@PathVariable subjectId: UUID): List<FeedingLog> {
         val userId = SecurityUtil.currentUserId()
