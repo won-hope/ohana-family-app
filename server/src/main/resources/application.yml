@@ -42,6 +42,11 @@ management:
         include: health,info
 
 ohana:
+  # 🚨 [추가된 부분] 스웨거 접속용 환경변수 설정
+  swagger:
+    user: ${SWAGGER_USER:admin}
+    password: ${SWAGGER_PASSWORD:ohana1234!} # 로컬 기본값이며, 서버 배포 시 Secrets로 대체 가능
+
   google:
     client-id: ${OHANA_GOOGLE_CLIENT_ID:replace-me}
     client-secret: ${OHANA_GOOGLE_CLIENT_SECRET:replace-me}
