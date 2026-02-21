@@ -7,6 +7,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 class SecurityConfig {
@@ -17,6 +20,7 @@ class SecurityConfig {
         http
             // Public endpoints: health/docs and auth entry points.
             .securityMatcher("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/google/sheets/connect/callback")
+            .cors { it.configurationSource(corsConfigurationSource()) } // CORS 활성화
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .headers { headers ->
@@ -37,6 +41,7 @@ class SecurityConfig {
     @Order(2)
     fun securedFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
+            .cors { it.configurationSource(corsConfigurationSource()) } // CORS 활성화
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .headers { headers ->
@@ -57,5 +62,18 @@ class SecurityConfig {
             .oauth2ResourceServer { it.jwt {} }
 
         return http.build()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowedOriginPatterns = listOf("*") // 모든 출처 허용 (보안상 필요시 특정 도메인으로 제한)
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+        configuration.allowedHeaders = listOf("*")
+        configuration.allowCredentials = true
+        
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
     }
 }

@@ -40,6 +40,8 @@ dependencies {
     // --- Persistence ---
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("org.postgresql:postgresql")
+    // Cloud SQL Socket Factory (Cloud Run 배포용)
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.23.0")
 
     // --- Flyway (안정권) ---
     implementation("org.flywaydb:flyway-core")

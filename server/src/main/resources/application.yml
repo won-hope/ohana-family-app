@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080} # Cloud Run은 PORT 환경변수를 주입하므로 이를 사용하도록 수정
 
 spring:
   config:
@@ -12,12 +12,12 @@ spring:
 
   flyway:
     baseline-on-migrate: true
-    enabled: true
+    enabled: false
     validate-on-migrate: false # ⚠️ 체크섬 불일치 무시 (개발 환경용)
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     open-in-view: false
     properties:
       hibernate:
@@ -38,9 +38,9 @@ ohana:
   google:
     client-id: ${OHANA_GOOGLE_CLIENT_ID:replace-me}
     client-secret: ${OHANA_GOOGLE_CLIENT_SECRET:replace-me}
-    redirect-uri: "http://localhost:8080/google/sheets/connect/callback"
+    redirect-uri: ${OHANA_GOOGLE_REDIRECT_URI:http://localhost:8080/google/sheets/connect/callback} # 환경변수로 분리
   crypto:
-    token-secret: "randomstring32byteslongmustbehere!!" # 32글자 이상!
+    token-secret: ${OHANA_CRYPTO_TOKEN_SECRET:randomstring32byteslongmustbehere!!} # 환경변수로 분리
   jwt:
     # 32+ bytes recommended for HS256.
     secret: ${OHANA_JWT_SECRET:change-me-change-me-change-me-32bytes-minimum}

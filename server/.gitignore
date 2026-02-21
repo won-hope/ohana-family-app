@@ -50,7 +50,11 @@ out/
 *.keystore
 *.der
 secrets/
+deploy.sh
 
 ### Spring profiles (keep base application.yml) ###
 src/main/resources/application-*.yml
 !src/main/resources/application.yml
+
+gcp-key.json
+*.json
