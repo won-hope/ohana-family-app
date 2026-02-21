@@ -23,6 +23,7 @@ class SecurityConfig {
             .securityMatcher(
                 "/actuator/**",
                 "/swagger-ui/**",
+                "/swagger-ui.html", // 혹시 몰라서 이것도 추가!
                 "/v3/api-docs/**",
                 "/auth/**",
                 "/google/sheets/connect/callback"
@@ -34,14 +35,16 @@ class SecurityConfig {
                 headers.contentTypeOptions { }
                 headers.frameOptions { it.deny() }
                 headers.referrerPolicy { it.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER) }
-                // Deprecated된 permissionsPolicy 대신 addHeaderWriter 사용
                 headers.addHeaderWriter(
                     StaticHeadersWriter(
                         "Permissions-Policy",
                         "geolocation=(), microphone=(), camera=()"
                     )
                 )
-                headers.contentSecurityPolicy { it.policyDirectives("default-src 'none'") }
+                // 🚨 핵심 수정 부분: Swagger UI가 화면을 그릴 수 있도록 자바스크립트/CSS 허용!
+                headers.contentSecurityPolicy {
+                    it.policyDirectives("script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self';")
+                }
             }
             .authorizeHttpRequests { auth ->
                 auth.anyRequest().permitAll()
@@ -67,7 +70,10 @@ class SecurityConfig {
                         "geolocation=(), microphone=(), camera=()"
                     )
                 )
-                headers.contentSecurityPolicy { it.policyDirectives("default-src 'none'") }
+                // 일반 보안 체인에서도 너무 빡빡하지 않게 기본 허용치로 변경
+                headers.contentSecurityPolicy {
+                    it.policyDirectives("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self';")
+                }
             }
             .authorizeHttpRequests { auth ->
                 auth
